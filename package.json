@@ -4,12 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "live-server"
   },
   "dependencies": {
     "firebase": "^5.4.2"
   },
   "devDependencies": {
+    "live-server": "^1.2.0",
     "@types/firebase": "3.2.1"
   },
   "repository": {

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Poster</title>
+
+    <script src="js/firebase/firebase-app.js"></script>
+    <script src="js/firebase/firebase-auth.js"></script>
+    <script src="js/firebase/init.js"></script>
+
+    <script>
+        function start() {
+            firebase.auth().onAuthStateChanged(function(user) {
+                if (user) {
+                    let user = firebase.auth().currentUser;
+
+                    document.getElementById("email").innerHTML = user.email;
+                } else {
+                    // No user is signed in.
+                }
+            });
+        }
+
+        window.addEventListener("load", start);
+
+    </script>
+
+</head>
+
+<body>
+    <header>
+        <div>Poster</div>
+        <div>User: <span id="email"></span></div>
+    </header>
+    <section>
+        
+    </section>
+    <footer></footer>
+</body>
+
+</html>
