@@ -14,12 +14,33 @@
  * limitations under the License.
  */
 
+ .section-main {
+    float: left;
+    width: 800px;
+ }
+
+ .side-right {
+    float: left;
+    width: 200px;
+ }
+
+.users-frame {
+    border: 1px solid lightgray;
+}
+
+.user-frame {
+    border: 1 px solid lightgray;
+}
 
  .post-frame {
     margin: 2px;
     border: 1px solid lightgray;
     border-radius: 3px;
     padding: 2px;
+ }
+
+ .post-form {
+     float: none;
  }
 
  .post-by {
@@ -32,6 +53,16 @@
 
  .post-text {
      font-size: medium;
+ }
+
+ .input-text {
+    display: table-cell;
+     width: 300px;
+ }
+
+ .button {
+     white-space: nowrap;
+     padding: 10px;
  }
 
  html, body {

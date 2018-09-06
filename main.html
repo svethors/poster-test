@@ -25,6 +25,23 @@
                     let user = firebase.auth().currentUser;
 
                     document.getElementById("email").innerHTML = user.email;
+                    
+                    const usersColl = db.collection("users");
+
+                    const userDocRef = usersColl.doc(user.uid);
+                    userDocRef.get()
+                    .then(function(doc) {
+                            userDocRef.set({
+                                id: user.uid,
+                                email: user.email,
+                                status: 1
+                            })
+                            .catch(function(error) {
+                                console.log(error);
+                                return error;    
+                            });
+                        
+                    });
                 } else {
                     // No user is signed in.
                 }
@@ -51,10 +68,38 @@
                 })
                 .catch(function(error) {
                     console.log(error);
+                    return error;
                 });
             });
 
             loadPosts();
+            loadUsers();
+        }
+
+        function loadUsers() {
+            const users = db.collection("users").get()
+                .then(function(result) {
+                    result.forEach(function(user) {
+                        renderUser(user.data());
+                    });
+                })
+                .catch(function(error) {
+                    console.log(error);
+                    return error;
+                });
+        }
+
+        function renderUser(user) {
+            const userListDiv = document.getElementById("userList");
+
+            const userDiv = document.createElement("div");
+
+            const emailDiv = document.createElement("div");
+            emailDiv.textContent = user.email;
+
+            userDiv.appendChild(emailDiv);
+
+            userListDiv.appendChild(userDiv);
         }
 
         function loadPosts() {
@@ -68,23 +113,24 @@
 
                 }).catch(function(error) {
                     console.log(error);
+                    return error;
                 });
         }
 
         function renderPost(post) {
             const postListElement = document.getElementById("postList");
-            let postDiv = document.createElement("div");
+            const postDiv = document.createElement("div");
             postDiv.classList.add("post-frame");
             
-            let postedBySpan = document.createElement("span");
+            const postedBySpan = document.createElement("span");
             postedBySpan.classList.add("post-by");
             postedBySpan.textContent = post.postedBy;
 
-            let timestampSpan = document.createElement("span");
+            const timestampSpan = document.createElement("span");
             timestampSpan.classList.add("post-timestamp");
             timestampSpan.textContent = new Date(post.timestamp);
             
-            let textSpan = document.createElement("span");
+            const textSpan = document.createElement("span");
             textSpan.classList.add("post-text");
             textSpan.textContent = post.text;
             
@@ -108,12 +154,25 @@
         <div>Poster</div>
         <div>User: <span id="email"></span></div>
     </header>
-    <section>
-        <div><input type="text" id="txtNewPost"/><button type="button" id="btnNewPost">Post</button></div>
-        <div id="postList">
+    <div>
+        <section class="section-main">
+            <div class="post-form">
+                <input type="text" id="txtNewPost" class="input-text"/>
+                <button type="button" id="btnNewPost">Post</button>
+            </div>
             
-        </div>
-    </section>
+            <div id="postList">
+                
+            </div>
+        </section>
+
+        <aside class="side-right">
+            <span>Users:</span>
+            <div id="userList" class="users-frame">
+
+            </div>
+        </aside>
+    </div>
     <footer></footer>
 </body>
 
