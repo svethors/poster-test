@@ -4,12 +4,22 @@
     <meta charset="UTF-8">
     <title>Poster</title>
 
+    <link rel="stylesheet" href="main.css">
+
     <script src="js/firebase/firebase-app.js"></script>
     <script src="js/firebase/firebase-auth.js"></script>
+    <script src="js/firebase/firebase-firestore.js"></script>
     <script src="js/firebase/init.js"></script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.js" integrity="sha256-59IZ5dbLyByZgSsRE3Z0TjDuX7e1AiqW5bZ8Bg50dsU=" crossorigin="anonymous"></script>
+
     <script>
+        const db = firebase.firestore();
+        const settings = {/* your settings... */ timestampsInSnapshots: true};
+        db.settings(settings);
+        
         function start() {
+
             firebase.auth().onAuthStateChanged(function(user) {
                 if (user) {
                     let user = firebase.auth().currentUser;
@@ -19,9 +29,75 @@
                     // No user is signed in.
                 }
             });
+
+            document.getElementById("btnNewPost").addEventListener('click', function() {
+                let text = document.getElementById("txtNewPost").value;
+
+                let db = firebase.firestore();
+
+                let post  = {
+                    timestamp: moment.utc().valueOf(),
+                    postedBy: firebase.auth().currentUser.uid,
+                    text: text
+                }
+
+                db.collection("posts").add(post)
+                .then(function(docRef) {
+                    console.log(docRef);
+                    console.log(docRef.id);
+                 
+                    post.id = docRef.id;
+                    renderPost(post);
+                })
+                .catch(function(error) {
+                    console.log(error);
+                });
+            });
+
+            loadPosts();
+        }
+
+        function loadPosts() {
+            const posts = db.collection("posts");
+            posts.get()
+                .then(function(querySnapshot) {
+
+                    querySnapshot.forEach(function(doc) {
+                        renderPost(doc.data());
+                    });
+
+                }).catch(function(error) {
+                    console.log(error);
+                });
+        }
+
+        function renderPost(post) {
+            const postListElement = document.getElementById("postList");
+            let postDiv = document.createElement("div");
+            postDiv.classList.add("post-frame");
+            
+            let postedBySpan = document.createElement("span");
+            postedBySpan.classList.add("post-by");
+            postedBySpan.textContent = post.postedBy;
+
+            let timestampSpan = document.createElement("span");
+            timestampSpan.classList.add("post-timestamp");
+            timestampSpan.textContent = new Date(post.timestamp);
+            
+            let textSpan = document.createElement("span");
+            textSpan.classList.add("post-text");
+            textSpan.textContent = post.text;
+            
+            postDiv.appendChild(postedBySpan);
+            postDiv.appendChild(timestampSpan);
+            postDiv.appendChild(document.createElement("br"));
+            postDiv.appendChild(textSpan);
+            postListElement.appendChild(postDiv);
         }
 
         window.addEventListener("load", start);
+        
+        
 
     </script>
 
@@ -33,7 +109,10 @@
         <div>User: <span id="email"></span></div>
     </header>
     <section>
-        
+        <div><input type="text" id="txtNewPost"/><button type="button" id="btnNewPost">Post</button></div>
+        <div id="postList">
+            
+        </div>
     </section>
     <footer></footer>
 </body>

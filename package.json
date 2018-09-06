@@ -11,8 +11,7 @@
     "firebase": "^5.4.2"
   },
   "devDependencies": {
-    "live-server": "^1.2.0",
-    "@types/firebase": "3.2.1"
+    "live-server": "^1.2.0"
   },
   "repository": {
     "type": "git",
