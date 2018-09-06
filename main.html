@@ -77,9 +77,11 @@
                 });
             });
 
-            loadPosts();
             loadUsers();
+            loadPosts();
         }
+
+        const userIdMap = [];
 
         function loadUsers() {
             const userQuery = db.collection("users");
@@ -90,7 +92,11 @@
                     }
                     
                     if (change.type === 'added') {
-                        renderUser(change.doc.data());
+                        const user = change.doc.data();
+
+                        userIdMap[user.id] = user.email;
+
+                        renderUser(user);
                     }
                 });
             });
@@ -106,6 +112,7 @@
             const userListDiv = document.getElementById("userList");
 
             const userDiv = document.createElement("div");
+            userDiv.id = user.id;
 
             const emailDiv = document.createElement("div");
             emailDiv.textContent = user.email;
@@ -151,7 +158,7 @@
             
             const postedBySpan = document.createElement("span");
             postedBySpan.classList.add("post-by");
-            postedBySpan.textContent = post.postedBy;
+            postedBySpan.textContent = userIdMap[post.postedBy];
 
             const timestampSpan = document.createElement("span");
             timestampSpan.classList.add("post-timestamp");
