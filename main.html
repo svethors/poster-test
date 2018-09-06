@@ -41,13 +41,17 @@
                                 return error;    
                             });
                         
+                    }).catch(function(error) {
+                        console.log(error);
+                        return error;    
                     });
                 } else {
                     // No user is signed in.
                 }
             });
 
-            document.getElementById("btnNewPost").addEventListener('click', function() {
+            document.getElementById("formNewPost").addEventListener('submit', function(form) {
+                form.preventDefault();
                 let text = document.getElementById("txtNewPost").value;
 
                 let db = firebase.firestore();
@@ -62,9 +66,10 @@
                 .then(function(docRef) {
                     console.log(docRef);
                     console.log(docRef.id);
-                 
+                    
                     post.id = docRef.id;
-                    renderPost(post);
+                    document.getElementById("txtNewPost").value = "";
+                    //renderPost(post);
                 })
                 .catch(function(error) {
                     console.log(error);
@@ -77,16 +82,24 @@
         }
 
         function loadUsers() {
-            const users = db.collection("users").get()
-                .then(function(result) {
-                    result.forEach(function(user) {
-                        renderUser(user.data());
-                    });
-                })
-                .catch(function(error) {
-                    console.log(error);
-                    return error;
+            const userQuery = db.collection("users");
+            userQuery.onSnapshot(function(snapshot) {
+                snapshot.docChanges().forEach(function(change) {
+                    if (!snapshot.size) {
+                       return;
+                    }
+                    
+                    if (change.type === 'added') {
+                        renderUser(change.doc.data());
+                    }
                 });
+            });
+        }
+
+        function renderUsers(users) {
+            users.forEach(function(user) {
+                renderUser(user.data());
+            });
         }
 
         function renderUser(user) {
@@ -103,18 +116,32 @@
         }
 
         function loadPosts() {
-            const posts = db.collection("posts");
-            posts.get()
-                .then(function(querySnapshot) {
+            const postsQuery = db.collection("posts")
+            .orderBy('timestamp', 'asc');
 
-                    querySnapshot.forEach(function(doc) {
-                        renderPost(doc.data());
-                    });
+            postsQuery.onSnapshot(function(snapshot) {
+                snapshot.docChanges().forEach(function(change) {
+                    if(!snapshot.size) {
+                        return;
+                    }
 
-                }).catch(function(error) {
-                    console.log(error);
-                    return error;
+                    if (change.type === 'added') {
+                        renderPost(change.doc.data());
+                    }
                 });
+            });
+
+            // posts.get()
+            //     .then(function(querySnapshot) {
+
+            //         querySnapshot.forEach(function(doc) {
+            //             renderPost(doc.data());
+            //         });
+
+            //     }).catch(function(error) {
+            //         console.log(error);
+            //         return error;
+            //     });
         }
 
         function renderPost(post) {
@@ -157,8 +184,10 @@
     <div>
         <section class="section-main">
             <div class="post-form">
-                <input type="text" id="txtNewPost" class="input-text"/>
-                <button type="button" id="btnNewPost">Post</button>
+                <form id="formNewPost">
+                    <input type="text" id="txtNewPost" class="input-text"/>
+                    <button type="submit" id="btnNewPost">Post</button>
+                </form>
             </div>
             
             <div id="postList">
