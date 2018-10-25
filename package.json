@@ -8,10 +8,17 @@
     "start": "live-server"
   },
   "dependencies": {
-    "firebase": "^5.4.2"
+    "firebase": "^5.4.2",
+    "gulp": "^3.9.1"
   },
   "devDependencies": {
-    "live-server": "^1.2.0"
+    "@babel/core": "^7.1.0",
+    "@babel/preset-env": "^7.1.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-env": "^1.7.0",
+    "gulp-babel": "^8.0.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-sourcemaps": "^2.6.4"
   },
   "repository": {
     "type": "git",
